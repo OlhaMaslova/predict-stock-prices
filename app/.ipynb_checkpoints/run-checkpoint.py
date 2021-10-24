@@ -1,98 +1,70 @@
-import json
-import plotly
+import streamlit as st
+from datetime import date
+from plotly import graph_objs as go
+import yfinance as yf
 import pandas as pd
 
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
-
-from flask import Flask
-from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
-import joblib
-from sqlalchemy import create_engine
-
-from lib import get_data
-import yfinance as yf
-
-app = Flask(__name__)
-
-# load data
-engine = create_engine('sqlite:///data/Prices.db')
-#df = pd.read_sql_table(ticker, engine)
-
-# load model
-#model = joblib.load("../models/classifier.pkl")
+from fbprophet.plot import plot_plotly
+from fbprophet import Prophet
 
 
-# index web page displays cool visuals and receives user input text for model
-@app.route('/')
-@app.route('/index')
-def index():
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    # print(df)
-    # genre_counts = df.groupby('genre').count()['message']
-    # print('genre_counts', genre_counts)
-    # genre_names = list(genre_counts.index)
-    # print('genre_names', genre_names)
+START = "2010-01-01"
+TODAY = date.today().strftime("%Y-%m-%d")
 
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    # graphs = [
-    #     {
-    #         'data': [
-    #             Bar(
-    #                 x=genre_names,
-    #                 y=genre_counts
-    #             )
-    #         ],
+st.title("Stock Prediction App")
 
-    #         'layout': {
-    #             'title': 'Distribution of Message Genres',
-    #             'yaxis': {
-    #                 'title': "Count"
-    #             },
-    #             'xaxis': {
-    #                 'title': "Genre"
-    #             }
-    #         }
-    #     }
-    # ]
+stocks = ("AAPL", "GOOG", "NFLX", "FB", "AMZN")
+selected_stock = st.selectbox("Select dataset for prediction", stocks)
 
-    # # encode plotly graphs in JSON
-    # ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
-    # graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-
-    # render web page with plotly graphs
-    return render_template('master.html', ids=ids, graphJSON=graphJSON)
+n_years = st.slider("Years of Prediction", 1, 4)
+period = n_years * 365
 
 
-# web page that handles user query and displays model results
-@app.route('/go')
-def go():
-    # save user input in query
-    query = request.args.get('query', '')
+@st.cache
+def load_data(ticker):
+    """
 
+    """
     try:
-        df = get_data(ticker.upper())
+        data = yf.download(ticker.upper(), START, TODAY)
+        data.reset_index(inplace=True)
     except Exception:
-        print('Data can not be loaded.')
+        print('Data can not be loaded. Please check your ticker and try again')
 
-    # use model to predict classification for query
-    classification_labels = model.predict([query])[0]
-    classification_results = dict(zip(df.columns[4:], classification_labels))
-
-    # This will render the go.html Please see that file. 
-    return render_template(
-        'go.html',
-        query=query,
-        classification_result=classification_results
-    )
+    return data
 
 
-def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
+data_load_state = st.text("Load data ...")
+data = load_data(selected_stock)
+data_load_state.text("Load data ... done!")
 
 
-if __name__ == '__main__':
-    main()
+st.subheader('Raw Data')
+st.write(data.tail())
+
+
+def plot_raw_data():
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=data['Date'], y=data['Adj Close'], name='Adjusted Close'))
+    fig.add_trace(go.Scatter(
+        x=data['Date'], y=data['Close'], name='Close'))
+    fig.layout.update(title_text='Time Series Data',
+                      xaxis_rangeslider_visible=True)
+    st.plotly_chart(fig)
+
+
+plot_raw_data()
+
+m = Prophet()
+m.fit(df_train)
+future = m.make_future_dataframe(periods=period)
+forecast = m.predict(future)
+
+st.subheader('Forecast data')
+st.write(forecast.tail())
+
+st.write('Forecast data')
+fig_forecast = plot_plotly(m, forecast)
+st.plotly_chart(fig_forecast)
+

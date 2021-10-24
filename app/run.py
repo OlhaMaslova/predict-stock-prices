@@ -56,11 +56,6 @@ def plot_raw_data():
 
 plot_raw_data()
 
-# Forecasting with FB Prophet
-df_train = data[['Date', 'Adj Close']]
-# rename columns for FB prophet
-df_train = df_train.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
-
 m = Prophet()
 m.fit(df_train)
 future = m.make_future_dataframe(periods=period)
@@ -73,6 +68,3 @@ st.write('Forecast data')
 fig_forecast = plot_plotly(m, forecast)
 st.plotly_chart(fig_forecast)
 
-st.write('Forecast components')
-fig_components = m.plot_components(forecast)
-st.write(fig_components)
