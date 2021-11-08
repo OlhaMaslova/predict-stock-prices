@@ -1,15 +1,23 @@
 # Stock Price Prediction
 
-### Instructions:
+## Description
+INTRO: Pandemic has changed the way we live, the way we work, and the way we make money. According to Devin Ryan, equity research analyst at JMP Securities, more than 10 million new brokerage accounts were opened by individuals in 2020 — more than ever in a year. Huh, impressive, isn't it? 
 
-1. Run the following commands in the project's root directory to set up your database and model.
+DETAILS: So I wannted to see if I can use stock market data to have a meaningful prediction of future prices. I decided to compare the performance of multiple ML models and see how close I can get. I also decided to explore a new to me framework called Streamlit for building simple web-apps. 
 
-   - To run ETL pipeline that cleans data and stores in database
-     `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
-   - To run ML pipeline that trains classifier and saves
-     `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
+## Results:
+Among the 5 final models (Linear, Dense, CNN, RNN single-shot, and RNN autoregressive) CNN seems to be the best one. The main problem with this project is that market behaved unexpectedly during the pandemic. We have seen a huge drop in prices followed by a huge spike. Any of the models were unable to predict or adjust to such drastic changes.
 
-2. Run the following command in the app's directory to run your web app.
-   `python run.py`
 
-3. Go to http://0.0.0.0:3001/
+## Ideas to improve the performance of the models:
+1. Engineer features from news headlines;
+2. Engineer fetures from twitter/reddit data;
+
+### Instructions to run the app:
+
+1. Run the following command in the root directory to run your web app.
+   `streamlit app/run.py`
+
+2. Go to http://localhost:8501/
+
+
