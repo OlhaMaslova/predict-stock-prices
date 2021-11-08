@@ -13,12 +13,12 @@ from WindowGenerator import WindowGenerator
 START = "2010-01-01"
 TODAY = date.today().strftime("%Y-%m-%d")
 
-st.title("Stock Prediction App")
+st.title("7-Day Stock Prediction App")
 
 stocks = ("AAPL", "GOOG", "NFLX", "FB", "AMZN")
 selected_stock = st.selectbox("Select dataset for prediction", stocks)
 
-period = st.slider("Days to predict", 1, 30)
+period = 7
 
 
 def load_data(ticker):
@@ -143,11 +143,8 @@ def main():
     forecast = scaler.inverse_transform(predictions)
     forecast = forecast[-1:, :, 0]
 
-    #forecast = pd.DataFrame(predictions)
-
     st.write('Forecast data')
     st.write(forecast)
-    # plot_raw_data(predictions)
 
 
 if __name__ == "__main__":
