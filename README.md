@@ -20,7 +20,7 @@ Among the 5 final models (Linear, Dense, CNN, RNN single-shot, and RNN autoregre
 
 1. Install dependencies in your virtual environment by running:
 
-   `conda create --name <env> --file <requirements.txt>`
+   `conda create -n myenv --file package-list.txt`
 
 2. Run the following command in the root directory to run your web app.
    `streamlit app/run.py`
@@ -48,6 +48,7 @@ CAPESTONE-FINANCE/
    |__run.py
    |__WindowGenerator.py
 |__README.md
+|__package-list.txt
 ```
 
 ---
