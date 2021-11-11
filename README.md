@@ -49,6 +49,7 @@ CAPESTONE-FINANCE/
    |__WindowGenerator.py
 |__README.md
 |__package-list.txt
+|__Writeup.pdf              <- Project Writeup
 ```
 
 ---
